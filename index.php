@@ -170,7 +170,7 @@ include 'includes/header.php';
                 </div>
                 
                 <div class="mb-3">
-                    <div class="formula-box">
+                    <div class="formular-box">
                         <strong>Gesamtbetrag PayPal:</strong><br>
                         <?php echo $preis; ?> € * 1,029 + 0,35 € + <?php echo $shippingMethodPrice; ?> € (Versand) = <strong><?php echo number_format($betragMitPaypal, 2, ',', '.'); ?> €</strong>
                     </div>
