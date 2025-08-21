@@ -257,7 +257,7 @@ $totalWithPaypal = $price + $paypalFee + $shippingPrice;
         <h5 class="mb-0 fs-6">PayPal-Berechnung</h5>
     </div>
     <div class="card-body">
-        <div class="formula-box">
+        <div class="formular-box">
             <div class="row">
                 <div class="col-md-6">
                     <strong>Artikelpreis:</strong> <?php echo number_format($price, 2, ',', '.'); ?> €<br>

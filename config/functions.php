@@ -13,12 +13,14 @@ define('MAX_UPLOAD_SIZE', 20 * 1024 * 1024); // 20MB
  * @return mysqli Die Datenbankverbindung
  */
 function getDbConnection() {
-    $dbHost = 'localhost';
-    $dbUser = 'root';
-    $dbPass = 'root';
-    $dbName = 'kleinanzeigen';
-    $dbPort = 8889;
-    
+    $env = require __DIR__ . '/env.php';
+
+    $dbHost = $env['DB_HOST'];
+    $dbUser = $env['DB_USER'];
+    $dbPass = $env['DB_PASS'];
+    $dbName = $env['DB_NAME'];
+    $dbPort = (int) $env['DB_PORT'];
+
     $dbConnection = new mysqli($dbHost, $dbUser, $dbPass, $dbName, $dbPort);
     
     if ($dbConnection->connect_error) {
@@ -424,16 +426,21 @@ function generateArticlePdf($articleId, $title, $price, $dbConnection) {
     // Währung aus Konfiguration holen
     $currency = getConfigValue($dbConnection, 'pdf_currency', 'EUR');
     
+    $escapedTitle = htmlspecialchars($title);
+    $formattedPrice = number_format($price, 2, ',', '.');
+
     // Einfache HTML-Datei erstellen, die wie ein Badge aussieht
     $safeTitle = htmlspecialchars($title);
     $formattedPrice = number_format($price, 2, ',', '.');
-    $html = <<<HTML
+
+  $html = <<<HTML
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artikel: {$safeTitle}</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -471,6 +478,7 @@ function generateArticlePdf($articleId, $title, $price, $dbConnection) {
 </head>
 <body>
     <h1>{$safeTitle}</h1>
+
     <div class="price">{$formattedPrice} {$currency}</div>
 </body>
 </html>
