@@ -424,53 +424,58 @@ function generateArticlePdf($articleId, $title, $price, $dbConnection) {
     // Währung aus Konfiguration holen
     $currency = getConfigValue($dbConnection, 'pdf_currency', 'EUR');
     
+    $escapedTitle = htmlspecialchars($title);
+    $formattedPrice = number_format($price, 2, ',', '.');
+
     // Einfache HTML-Datei erstellen, die wie ein Badge aussieht
-    $html = '<!DOCTYPE html>
-    <html lang="de">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Artikel: ' . htmlspecialchars($title) . '</title>
-        <style>
+    $html = <<<HTML
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artikel: {$escapedTitle}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            width: 62mm;
+            height: 62mm;
+            margin: 0;
+            padding: 5mm;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        h1 {
+            font-size: 12pt;
+            margin-bottom: 10mm;
+            text-align: center;
+        }
+        .price {
+            font-size: 16pt;
+            font-weight: bold;
+            text-align: center;
+        }
+        @media print {
             body {
-                font-family: Arial, sans-serif;
-                width: 62mm;
-                height: 62mm;
+                border: none;
+            }
+            @page {
+                size: 62mm 62mm;
                 margin: 0;
-                padding: 5mm;
-                box-sizing: border-box;
-                border: 1px solid #ccc;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
             }
-            h1 {
-                font-size: 12pt;
-                margin-bottom: 10mm;
-                text-align: center;
-            }
-            .price {
-                font-size: 16pt;
-                font-weight: bold;
-                text-align: center;
-            }
-            @media print {
-                body {
-                    border: none;
-                }
-                @page {
-                    size: 62mm 62mm;
-                    margin: 0;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <h1>' . htmlspecialchars($title) . '</h1>
-        <div class="price">' . number_format($price, 2, ',', '.') . ' ' . $currency . '</div>
-    </body>
-    </html>';
+        }
+    </style>
+</head>
+<body>
+    <h1>{$escapedTitle}</h1>
+    <div class="price">{$formattedPrice} {$currency}</div>
+</body>
+</html>
+HTML;
     
     // HTML in Datei speichern
     file_put_contents($fileName, $html);
