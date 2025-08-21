@@ -89,9 +89,9 @@ function resizeImage($sourceFile, $targetFile, $maxWidth = 1200, $maxHeight = 12
     
     // Neue Dimensionen berechnen
     $ratio = min($maxWidth / $width, $maxHeight / $height);
-    $newWidth = $width * $ratio;
-    $newHeight = $height * $ratio;
-    
+    $newWidth = (int)($width * $ratio);
+    $newHeight = (int)($height * $ratio);
+
     // Neues Bild erstellen
     $newImage = imagecreatetruecolor($newWidth, $newHeight);
     
@@ -430,13 +430,17 @@ function generateArticlePdf($articleId, $title, $price, $dbConnection) {
     $formattedPrice = number_format($price, 2, ',', '.');
 
     // Einfache HTML-Datei erstellen, die wie ein Badge aussieht
-    $html = <<<HTML
+    $safeTitle = htmlspecialchars($title);
+    $formattedPrice = number_format($price, 2, ',', '.');
+
+  $html = <<<HTML
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artikel: {$escapedTitle}</title>
+    <title>Artikel: {$safeTitle}</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -473,7 +477,8 @@ function generateArticlePdf($articleId, $title, $price, $dbConnection) {
     </style>
 </head>
 <body>
-    <h1>{$escapedTitle}</h1>
+    <h1>{$safeTitle}</h1>
+
     <div class="price">{$formattedPrice} {$currency}</div>
 </body>
 </html>
