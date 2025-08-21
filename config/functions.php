@@ -13,12 +13,14 @@ define('MAX_UPLOAD_SIZE', 20 * 1024 * 1024); // 20MB
  * @return mysqli Die Datenbankverbindung
  */
 function getDbConnection() {
-    $dbHost = 'localhost';
-    $dbUser = 'root';
-    $dbPass = 'root';
-    $dbName = 'kleinanzeigen';
-    $dbPort = 8889;
-    
+    $env = require __DIR__ . '/env.php';
+
+    $dbHost = $env['DB_HOST'];
+    $dbUser = $env['DB_USER'];
+    $dbPass = $env['DB_PASS'];
+    $dbName = $env['DB_NAME'];
+    $dbPort = (int) $env['DB_PORT'];
+
     $dbConnection = new mysqli($dbHost, $dbUser, $dbPass, $dbName, $dbPort);
     
     if ($dbConnection->connect_error) {
