@@ -1,0 +1,178 @@
+/* Allgemeine Stile */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8f9fa;
+}
+
+main {
+    flex: 1;
+}
+
+/* Formulare */
+.form-container {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+textarea.form-control {
+    min-height: 150px;
+}
+
+textarea.form-control.large {
+    min-height: 250px;
+}
+
+/* Bilder */
+.images-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.image-item {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 0.375rem;
+    overflow: hidden;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.image-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.image-item:hover img {
+    transform: scale(1.05);
+}
+
+.delete-image-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background-color: rgba(220, 53, 69, 0.8);
+    color: white;
+    border: none;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 10;
+}
+
+.delete-image-btn:hover {
+    background-color: rgba(220, 53, 69, 1);
+}
+
+/* Status-Badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+}
+
+.status-draft {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.status-online {
+    background-color: #198754;
+    color: white;
+}
+
+.status-sold {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Artikel-Liste */
+.article-list tr {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.article-list tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Formularbeschreibung */
+.formula-box {
+    background-color: #f8f9fa;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #0d6efd;
+}
+
+/* Eingabefelder im Detailformular */
+.custom-form .form-label {
+    font-weight: 500;
+}
+
+/* Artikel-Kopf im Detailformular */
+.article-header {
+    background-color: #f8f9fa;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Suchfeld */
+.search-filter {
+    position: relative;
+}
+
+.search-filter .form-control {
+    padding-left: 2.5rem;
+}
+
+.search-filter .search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+/* Thumbnail-Styling in der Übersichtstabelle - spezifisch auf die Übersichtstabelle beschränkt */
+.article-list td .article-thumbnail {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    transition: transform 0.2s ease;
+}
+
+.article-list tr:hover .article-thumbnail {
+    transform: scale(1.1);
+}
+
+.article-thumbnail-placeholder {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+}
