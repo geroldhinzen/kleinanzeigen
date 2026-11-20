@@ -39,47 +39,99 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // ---- Versandmethode und -preis aktualisieren ----
-    const shippingMethodSelect = document.getElementById('shipping_method_id');
-    const versandpreisField = document.getElementById('versandpreis');
-    const preisField = document.getElementById('preis');
-    
-    if (shippingMethodSelect && versandpreisField) {
-        // Bei Änderung der Versandmethode
-        shippingMethodSelect.addEventListener('change', function() {
-            updateShippingPrice();
-        });
+    // ---- PayPal-Berechnung aktualisieren ----
+    function updatePayPalCalculation() {
+        // Prüfen, ob wir auf der Detail-Seite sind
+        const artikelPreisElement = document.getElementById('artikel-preis');
+        if (!artikelPreisElement) return; // Nicht auf der Detail-Seite oder Element nicht gefunden
         
-        // Bei Änderung des Preises
-        if (preisField) {
-            preisField.addEventListener('input', function() {
-                // Wenn eine Versandmethode ausgewählt ist, Preis aktualisieren
-                if (shippingMethodSelect.value) {
-                    updateShippingPrice();
-                }
-            });
-        }
+        // Elemente abrufen
+        const preisField = document.getElementById('preis');
         
-        // Funktion zur Aktualisierung des Versandpreises
-        function updateShippingPrice() {
+        // Versandmethode aus dem Dropdown holen
+        const shippingMethodSelect = document.getElementById('shipping_method_id');
+        let versandMethodePreis = 0;
+        
+        if (shippingMethodSelect && shippingMethodSelect.value) {
             const selectedOption = shippingMethodSelect.options[shippingMethodSelect.selectedIndex];
             if (selectedOption && selectedOption.value) {
-                const shippingMethodPrice = parseFloat(selectedOption.getAttribute('data-price') || 0);
-                const artikelPreis = parseFloat(preisField.value || 0);
-                
-               
-                    // Versandpreis ist die Summe aus Artikelpreis und Versandmethode-Preis
-                    const gesamtpreis = artikelPreis + shippingMethodPrice;
-                    versandpreisField.value = gesamtpreis.toFixed(2);
-                
+                versandMethodePreis = parseFloat(selectedOption.getAttribute('data-price') || 0);
             }
         }
         
-        // Initial ausführen, falls bereits eine Methode ausgewählt ist
-        if (shippingMethodSelect.value) {
-            updateShippingPrice();
+        // Artikelpreis holen
+        const artikelPreis = parseFloat(preisField.value) || 0;
+        
+        // PayPal-Gebühr berechnen (2,49% + 0,35 €)
+        const paypalGebuehr = (artikelPreis * 0.0249) + 0.35;
+        const gesamtPreis = artikelPreis + paypalGebuehr + versandMethodePreis;
+        
+        // Formatierung für die Anzeige
+        const formatPrice = (price) => {
+            return price.toFixed(2).replace('.', ',');
+        };
+        
+        // Anzeige-Elemente aktualisieren
+        document.getElementById('artikel-preis').textContent = formatPrice(artikelPreis) + ' €';
+        document.getElementById('paypal-gebuehr').textContent = formatPrice(paypalGebuehr) + ' €';
+        document.getElementById('versand-kosten').textContent = formatPrice(versandMethodePreis) + ' €';
+        document.getElementById('gesamt-betrag').textContent = formatPrice(gesamtPreis) + ' €';
+        
+        // Detail-Berechnung aktualisieren, wenn das Element existiert
+        const calculationDetailsElement = document.getElementById('calculation-details');
+        if (calculationDetailsElement) {
+            calculationDetailsElement.textContent = 
+                `(${formatPrice(artikelPreis)} € + ${formatPrice(paypalGebuehr)} € + ${formatPrice(versandMethodePreis)} €)`;
         }
+        
+        console.log('PayPal-Berechnung aktualisiert: ', {
+            artikelPreis,
+            paypalGebuehr,
+            versandMethodePreis,
+            gesamtPreis
+        });
     }
+    
+    // ---- Versandmethode und -preis aktualisieren ----
+    const shippingMethodSelect = document.getElementById('shipping_method_id');
+    const versandpreisField = document.getElementById('versandpreis');
+    
+    if (shippingMethodSelect) {
+        // Bei Änderung der Versandmethode
+        shippingMethodSelect.addEventListener('change', function() {
+            console.log('Versandmethode geändert:', this.value);
+            
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption && selectedOption.value) {
+                const shippingMethodPrice = parseFloat(selectedOption.getAttribute('data-price') || 0);
+                console.log('Gewählter Versandpreis:', shippingMethodPrice);
+                
+                // Versandpreisfeld aktualisieren, wenn vorhanden
+                if (versandpreisField) {
+                    versandpreisField.value = shippingMethodPrice.toFixed(2);
+                }
+                
+                // PayPal-Berechnung aktualisieren, egal ob Versandpreisfeld vorhanden ist
+                updatePayPalCalculation();
+            }
+        });
+        
+        // Sofortige Aktualisierung auslösen
+        const event = new Event('change');
+        shippingMethodSelect.dispatchEvent(event);
+    }
+    
+    // Bei Änderung des Preises
+    const preisField = document.getElementById('preis');
+    if (preisField) {
+        preisField.addEventListener('input', function() {
+            console.log('Preis geändert:', this.value);
+            updatePayPalCalculation();
+        });
+    }
+    
+    // Initial PayPal-Berechnung ausführen
+    updatePayPalCalculation();
     
     // ---- Copy-Funktion für Textfelder ----
     const copyButtons = document.querySelectorAll('[data-action="copy"]');
@@ -123,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const tableRows = document.querySelectorAll('.article-list tbody tr');
             
             tableRows.forEach(row => {
-                const title = row.querySelector('td:first-child').textContent.toLowerCase();
+                const title = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
                 
                 if (searchValue === '' || title.includes(searchValue)) {
                     row.style.display = '';
@@ -201,12 +253,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
             switch(field) {
                 case 'title':
-                    aValue = a.querySelector('td:nth-child(1)')?.textContent.toLowerCase() || '';
-                    bValue = b.querySelector('td:nth-child(1)')?.textContent.toLowerCase() || '';
+                    aValue = a.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
+                    bValue = b.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || '';
                     break;
                 case 'price':
-                    aValue = parseFloat(a.querySelector('td:nth-child(2)')?.textContent.replace('€', '').replace(',', '.') || '0');
-                    bValue = parseFloat(b.querySelector('td:nth-child(2)')?.textContent.replace('€', '').replace(',', '.') || '0');
+                    aValue = parseFloat(a.querySelector('td:nth-child(3)')?.textContent.replace('€', '').replace(',', '.') || '0');
+                    bValue = parseFloat(b.querySelector('td:nth-child(3)')?.textContent.replace('€', '').replace(',', '.') || '0');
                     break;
                 case 'created':
                     aValue = new Date(a.getAttribute('data-created') || 0);

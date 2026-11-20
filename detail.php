@@ -242,13 +242,15 @@ include 'includes/header.php';
             </div>
 
             <?php
-// Berechnung der PayPal-Gebühren (nur für den Artikelpreis)
+// Berechnung der PayPal-Gebühren mit korrektem Versandpreis
 $price = floatval($article['price']);
-$shippingPrice = floatval($article['shipping_price']);
+
+// Versandpreis aus der ausgewählten Versandmethode holen, nicht aus shipping_price
+$shippingMethodPrice = $selectedShippingMethod ? floatval($selectedShippingMethod['price']) : 0;
 
 // PayPal-Gebühren: 2,49% + 0,35 EUR
 $paypalFee = ($price * 0.0249) + 0.35;
-$totalWithPaypal = $price + $paypalFee + $shippingPrice;
+$totalWithPaypal = $price + $paypalFee + $shippingMethodPrice;
 ?>
 
 <!-- PayPal-Preisberechnung Box -->
@@ -260,14 +262,15 @@ $totalWithPaypal = $price + $paypalFee + $shippingPrice;
         <div class="formula-box">
             <div class="row">
                 <div class="col-md-6">
-                    <strong>Artikelpreis:</strong> <?php echo number_format($price, 2, ',', '.'); ?> €<br>
-                    <strong>PayPal-Gebühr (2,49% + 0,35 €):</strong> <?php echo number_format($paypalFee, 2, ',', '.'); ?> €<br>
-                    <strong>Versandkosten:</strong> <?php echo number_format($shippingPrice, 2, ',', '.'); ?> €
+                    <strong>Artikelpreis:</strong> <span id="artikel-preis"><?php echo number_format($price, 2, ',', '.'); ?> €</span><br>
+                    <strong>PayPal-Gebühr (2,49% + 0,35 €):</strong> <span id="paypal-gebuehr"><?php echo number_format($paypalFee, 2, ',', '.'); ?> €</span><br>
+                    <strong>Versandkosten:</strong> <span id="versand-kosten"><?php echo number_format($shippingMethodPrice, 2, ',', '.'); ?> €</span>
                 </div>
                 <div class="col-md-6">
                     <div class="alert alert-info mb-0">
                         <strong>Gesamtbetrag bei PayPal-Zahlung:</strong><br>
-                        <?php echo number_format($totalWithPaypal, 2, ',', '.'); ?> €
+                        <span id="gesamt-betrag"><?php echo number_format($totalWithPaypal, 2, ',', '.'); ?> €</span> 
+                        <span class="small text-muted" id="calculation-details">(<?php echo number_format($price, 2, ',', '.'); ?> € + <?php echo number_format($paypalFee, 2, ',', '.'); ?> € + <?php echo number_format($shippingMethodPrice, 2, ',', '.'); ?> €)</span>
                     </div>
                 </div>
             </div>
